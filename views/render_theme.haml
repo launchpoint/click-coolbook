@@ -1,0 +1,91 @@
+!!! Transitional
+%html{:xmlns=>'http://www.w3.org/1999/xhtml'}
+  %head
+    - if (count($title)>0)
+      -$title = join(' | ', $title)
+      %title =$title
+    - if (count($meta_description)>0)
+      -$description = join(' | ', $meta_description)
+      %meta{:name=>'description', :content=>$description}
+    -if(count($meta_keywords)>0)
+      -$k = join(', ', $meta_keywords)
+      %meta{:name=>'keywords', :content=>$keywords}
+    =$head['output']
+    - foreach( gather($css_assets['data'], 'assets') as $link)
+      %link{:rel=>'stylesheet', :href=>$link['src']}
+    - foreach(gather($js_assets['data'], 'assets') as $link)
+      %script{:type=>'text/javascript', :src=>$link['src']}          
+    =$css_assets['output']
+    =$js_assets['output']
+  %body
+    =$body_start['output']
+    .mainArea
+      .header
+        =$header['output']
+      .top{:style=>p('__chromeless') ? 'display: none' : ''}
+        .navigation
+          .title
+            .clickable{:onclick=>"document.location = '".home_url()."';"}
+              =se(APP_NAME)
+          .links
+            .clickable
+              %a{:href=>home_url()} =se("Home")
+            - foreach(gather($nav_links['data'], 'links') as $link)
+              .clickable
+                %a{:href=>$link['href']}= $link['label']
+          .widgets
+            =$before_nav_widgets['output']
+            =$nav_widgets['output']
+          .clear
+      %table.middle
+        %tr
+          %td.center
+            .content
+              -if (count($subnav_links['data'])>0)
+                .tab_bar
+                  %ul
+                    - foreach(gather($subnav_links['data'], 'links') as $link)
+                      %li
+                        %a{:href=>$link['href']}= $link['label']
+                %div{:class=>'clear'}
+              -if(trim($contextual_help['output']))
+                .panel
+                  .help
+                    .collapsible_head.button =se("Help")
+                    .collapsible.body
+                      =$contextual_help['output']
+              -if (count($section_links['data'])>0)
+                .section_link_bar
+                  %ul
+                    - foreach(gather($section_links['data'], 'links') as $link)
+                      %li
+                        %a{:href=>$link['href']}= $link['label']
+                %div{:class=>'clear'}
+              - if (count($flash)>0)
+                .flash
+                  -foreach($flash as $message)
+                    =$message
+                    %br
+              =$after_flash['output']
+              =$before_content['output']
+              =$content['output']
+              =$after_content['output']
+      .bottom{:style=>p('__chromeless') ? 'display: none' : ''}
+        .footer
+          =$footer['output']
+          %div
+            =se("Official ".APP_NAME." time:")
+            =date('l, F jS Y h:i A', time())
+          .links
+            - foreach(gather($footer_links['data'], 'links') as $link)
+              %a{:href=>$link['href']}= $link['label']
+          .copyright
+            =se("(c) 2009")
+            =se(COMPANY_NAME)
+          =$after_footer['output']
+        .clear
+  -if(p('__scrollpos'))
+    :js
+      $(function() {
+        $(window).scrollTop(<?=p('__scrollpos')?>);
+      });
